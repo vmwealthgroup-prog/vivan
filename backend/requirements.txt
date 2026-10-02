@@ -1,0 +1,21 @@
+# Core API
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+pydantic-settings>=2.2
+python-multipart>=0.0.9
+
+# Database
+sqlalchemy>=2.0
+alembic>=1.13
+
+# Auth
+bcrypt>=4.1
+PyJWT>=2.8
+pyotp>=2.9
+qrcode[pil]>=7.4
+
+# Quant core
+pandas>=2.1
+numpy>=1.26
+yfinance>=0.2.40

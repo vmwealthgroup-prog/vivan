@@ -1,0 +1,113 @@
+<<<<<<< HEAD
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-box {
+            background-color: White;
+            padding: 30px;
+            width: 350px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+        h2 {
+            text-align: center;
+            
+        }
+        input{
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color:#007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #message {
+            text-align: center;
+            margin-top: 15px;
+    
+        }
+
+    </style> 
+    </head>
+    <body>
+        <div class="login-box">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="email" id="email" placeholder="Enter email" required>
+                <input type="password" id="password" placeholder="Enter password" required>
+                <button type="submit">Login</button>
+            </form>
+          
+            <p style="text-align: center; margin-top: 15px;">Don't have an account? <a href="register.html">Register here</a></p>
+            <p id="message"></p>
+        </div>
+        <script>
+            document.getElementById('loginForm').addEventListener('submit',async function(event) {
+                event.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const message = document.getElementById('message');
+                try {
+                    const response = await fetch("http://127.0.0.1:8000/login", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email:email, password:password })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        message.innerText = "Login successful";
+
+                        console.log(data);
+                    } else {
+                        message.innerText = data.detail || "Login failed";
+                    }
+                } catch (error) {
+                    message.innerText ="Cannot connect to server";
+                    console.error( error);
+                    }   
+
+              
+               
+            });
+        </script>
+    </body>   
+</html>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="./app/page.css">
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module" src="./dashboard.jsx"></script>
+</body>
+</html>
+
+>>>>>>> be5405c9a04ec569fefba789f4500b419d3689bd
