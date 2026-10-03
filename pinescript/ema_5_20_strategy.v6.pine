@@ -1,1 +1,52 @@
+//@version=6
+strategy("EMA 5/20 Quant System v6", overlay=true, initial_capital=100000, currency=currency.INR, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
 
+// Configurable Inputs
+i_webhookSecret = input.string("SHARED_WEBHOOK_SECRET_KEY_12345", "Webhook Secret", group="Security")
+i_webhookUrl    = input.string("https://your-domain.com/webhook/tradingview", "Webhook Endpoint", group="Security")
+i_useEma200     = input.bool(true, "Enable EMA 200 Trend Filter", group="Strategy Filters")
+i_atrLen        = input.int(14, "ATR Length", group="Risk Engine")
+i_atrMult       = input.float(1.5, "ATR Stop Loss Multiplier", group="Risk Engine")
+i_rrRatio       = input.float(2.0, "Reward-to-Risk Ratio", group="Risk Engine")
+i_lotSize       = input.int(25, "Instrument Lot Size (e.g. NIFTY=25)", group="Market Specs")
+
+// Technical Indicators
+ema5   = ta.ema(close, 5)
+ema20  = ta.ema(close, 20)
+ema200 = ta.ema(close, 200)
+atr    = ta.atr(i_atrLen)
+
+// Crossover Signals on Confirmed Candle Close (barstate.isconfirmed)
+longCrossover  = ta.crossover(ema5, ema20) and barstate.isconfirmed
+shortCrossover = ta.crossunder(ema5, ema20) and barstate.isconfirmed
+
+longCondition  = longCrossover and (not i_useEma200 or close > ema200)
+shortCondition = shortCrossover and (not i_useEma200 or close < ema200)
+
+// Visual Plots
+plot(ema5, "EMA 5", color=color.cyan, linewidth=2)
+plot(ema20, "EMA 20", color=color.yellow, linewidth=2)
+plot(ema200, "EMA 200 Filter", color=color.purple, linewidth=1)
+
+// Dynamic Risk Levels
+var float longSL = 0.0
+var float longTP = 0.0
+
+if (longCondition)
+    longSL := close - (atr * i_atrMult)
+    longTP := close + ((close - longSL) * i_rrRatio)
+    
+    // Construct Webhook JSON Alert
+    alertPayload = '{"secret":"' + i_webhookSecret + '",' +
+      '"symbol":"' + syminfo.ticker + '",' +
+      '"timeframe":"' + timeframe.period + '",' +
+      '"bar_time":"' + str.format("{0,date,yyyy-MM-dd'T'HH:mm:ss'Z'}", time) + '",' +
+      '"event":"BUY",' +
+      '"price":' + str.tostring(close) + ',' +
+      '"stop_loss":' + str.tostring(longSL) + ',' +
+      '"take_profit":' + str.tostring(longTP) + ',' +
+      '"lot_size":' + str.tostring(i_lotSize) + '}'
+    
+    alert(alertPayload, alert.freq_once_per_bar_close)
+    strategy.entry("Long", strategy.long)
+    strategy.exit("Exit Long", "Long", stop=longSL, limit=longTP)
