@@ -25,7 +25,8 @@ from pydantic import BaseModel, Field
 
 # Auth + DB
 from app.db import Base, engine
-from app.auth.routes import router as auth_router
+from app.api.webhook import router as webhook_router
+import app.models.schema  # noqa: F401 — registers DB tables on Base
 
 from app.indicators import engine as ind
 from app.patterns import structure as struct_mod
