@@ -54,7 +54,7 @@ app.add_middleware(
 Base.metadata.create_all(bind=engine)
 
 # Routers
-app.include_router(auth_router)
+app.include_router(webhook_router)
 
 
 def _get_history(symbol: str, interval: str, lookback: int, mode: str):
